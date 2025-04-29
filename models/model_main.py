@@ -175,7 +175,7 @@ class CombinedEncoder(nn.Module):
         self.transformer = TransformerEncoderModule(d_model=zdim, nhead=transformer_heads, num_layers=transformer_layers)
         self.dropout = nn.Dropout(p=dropout_p)
         
-        # 全连接层用于生成潜在向量的均值和方差
+
         self.fc1_m = nn.Linear(zdim * 2, 256)
         self.fc2_m = nn.Linear(256, 128)
         self.fc3_m = nn.Linear(128, zdim)
@@ -192,20 +192,15 @@ class CombinedEncoder(nn.Module):
         # x: (B, N, 3)
         z_mu, z_sigma = self.encoder(x)  # (B, zdim), (B, zdim)
         
-        # 扩展z_mu以匹配Attention和Transformer的输入
         z_mu_expanded = z_mu.unsqueeze(-1)  # (B, zdim, 1)
         
-        # 注意力模块
         attended_features = self.attention(z_mu_expanded)  # (B, zdim)
         
-        # Transformer模块
         transformer_features = self.transformer(z_mu_expanded)  # (B, zdim)
         
-        # 特征拼接融合
         combined_features = torch.cat([attended_features, transformer_features], dim=1)  # (B, 2 * zdim)
         combined_features = self.dropout(combined_features)
         
-        # 全连接层生成潜在向量的均值和方差
         m = F.relu(self.fc_bn1_m(self.fc1_m(combined_features)))
         m = F.relu(self.fc_bn2_m(self.fc2_m(m)))
         m = self.fc3_m(m)  # (B, zdim)
