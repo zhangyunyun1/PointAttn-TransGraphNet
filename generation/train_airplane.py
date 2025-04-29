@@ -177,7 +177,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Model arguments
     parser.add_argument('--model', type=str, default='flow', choices=['flow', 'gaussian'])
-    parser.add_argument('--log_root', type=str, default='logs_gen/snowflake_cd_only/airplane')
+    parser.add_argument('--log_root', type=str, default='logs_gen/PointAttn_TransGraphNet/airplane')
     parser.add_argument('--latent_dim', type=int, default=256)
     parser.add_argument('--num_steps', type=int, default=100)
     parser.add_argument('--beta_1', type=float, default=1e-4)
