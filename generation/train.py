@@ -47,7 +47,7 @@ parser.add_argument('--train_batch_size', type=int, default=96)
 parser.add_argument('--val_batch_size', type=int, default=32)
 parser.add_argument('--num_workers', type=int, default=4)
 
-# Transformer 参数
+# Transformer 
 parser.add_argument('--transformer_layers', type=int, default=6, help='Number of transformer layers')
 parser.add_argument('--transformer_heads', type=int, default=8, help='Number of attention heads in transformer')
 parser.add_argument('--dropout_p', type=float, default=0.3, help='Dropout probability')
@@ -134,21 +134,17 @@ scheduler = get_linear_scheduler(
 # Train, validate and test
 
 def train(it):
-    # 加载数据
     batch = next(train_iter)
     x = batch['pointcloud'].to(args.device)
 
-    # 重置梯度和模型状态
     optimizer.zero_grad()
     model.train()
     if args.spectral_norm:
         spectral_norm_power_iteration(model, n_power_iterations=1)
 
-    # 前向传播
     kl_weight = args.kl_weight
     loss = model.get_loss(x, kl_weight=kl_weight, writer=writer, it=it)
 
-    # 反向传播和优化
     loss.backward()
     orig_grad_norm = clip_grad_norm_(model.parameters(), args.max_grad_norm)
     optimizer.step()
