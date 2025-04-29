@@ -14,7 +14,7 @@ from utils.data import DataLoader
 from models.model_vae import ModelVAE
 from evaluation import compute_all_metrics, jsd_between_point_cloud_sets
 
-method = 'SPD'
+method = 'GraphSAGE'
 
 def normalize_point_clouds(pcs, mode, logger):
     if mode is None:
